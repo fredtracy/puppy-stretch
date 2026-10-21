@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7c4b4" />
+    <title>Workout Timer</title>
+    <link rel="icon" id="favicon" type="image/png" />
+    <style>
+      :root {
+        --sky-top: #ffe3d2;
+        --sky-mid: #f7c4b4;
+        --grass-top: #c8e4a8;
+        --grass-bottom: #94c77c;
+        --ink: #3b2a33;
+        --ink-soft: rgba(59, 42, 51, 0.6);
+        --button: #e86f8a;
+        --button-ink: #fff;
+        --panel: rgba(255, 248, 244, 0.86);
+      }
+      body.night {
+        --sky-top: #1d1530;
+        --sky-mid: #3a2755;
+        --grass-top: #2c3f37;
+        --grass-bottom: #1b2a24;
+        --ink: #f3e6ff;
+        --ink-soft: rgba(243, 230, 255, 0.6);
+        --button: #9b5de5;
+        --panel: rgba(29, 21, 48, 0.86);
+      }
+      html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        color: var(--ink);
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        background: linear-gradient(
+          var(--sky-top) 0%,
+          var(--sky-mid) 58%,
+          var(--grass-top) 58%,
+          var(--grass-bottom) 100%
+        );
+      }
+      #stage, #stage canvas {
+        position: fixed;
+        inset: 0;
+        display: block;
+      }
+      #hud {
+        position: fixed;
+        top: max(16px, env(safe-area-inset-top));
+        left: 16px;
+        right: 16px;
+        text-align: center;
+        pointer-events: none;
+      }
+      #count {
+        font-size: min(30vw, 22vh);
+        font-weight: 800;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        transition: transform 0.15s;
+      }
+      #count.pop {
+        transform: scale(1.12);
+      }
+      #status {
+        margin-top: 6px;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--ink-soft);
+      }
+      #controls {
+        position: fixed;
+        left: 16px;
+        right: 16px;
+        bottom: max(16px, env(safe-area-inset-bottom));
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      #controls button {
+        flex: 0 1 160px;
+        min-height: 56px;
+        border: 0;
+        border-radius: 28px;
+        font-size: 18px;
+        font-weight: 700;
+        background: var(--panel);
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #start-screen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 16px;
+        background: var(--panel);
+        text-align: center;
+      }
+      #start-screen h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+      #start-screen p {
+        margin: 0 0 12px;
+        color: var(--ink-soft);
+      }
+      #start {
+        width: min(64vw, 280px);
+        aspect-ratio: 1;
+        border: 0;
+        border-radius: 50%;
+        background: var(--button);
+        color: var(--button-ink);
+        font-size: 34px;
+        font-weight: 800;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #start:active {
+        transform: scale(0.97);
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="hud">
+      <div id="count">30</div>
+      <div id="status">Ready</div>
+    </div>
+    <div id="controls" hidden>
+      <button id="pause">Pause</button>
+      <button id="stop">Stop</button>
+    </div>
+    <div id="start-screen">
+      <h1>Workout Timer</h1>
+      <p id="blurb">Darla barks every 30 seconds</p>
+      <button id="start">Start</button>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
