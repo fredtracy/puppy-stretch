@@ -41,6 +41,13 @@ the list periodically and either bless or revert each item, then move it to a
   gain). A synthesised bell came first; it was dropped when asked for "just
   bark". The bark at Start waits for the sample to load rather than being
   skipped.
+- **Home-screen icon and app mode.** Asked for a real Darla icon for the home
+  screen. Beyond that I picked: the peach page colour (#f7c4b4) as the icon
+  background, the face at 66% of the icon width (inside the circle Android
+  crops "maskable" icons to), and `display: standalone`, so the home-screen
+  shortcut opens full screen without Chrome's address bar. Icons are drawn by
+  `scripts/make-icons.mjs` from the same shapes as `portrait-darla.js` — if
+  the portrait changes, rerun it.
 
 ## Went out untested
 
@@ -50,3 +57,6 @@ the list periodically and either bless or revert each item, then move it to a
   the vibration fires, that the wake lock actually keeps an Android screen on,
   or what happens after the phone is locked and unlocked mid-workout. The
   night look has never been seen.
+- **Installing to a Pixel home screen.** The manifest and icons load, but the
+  install itself, the icon as Android crops it, and standalone mode haven't
+  been seen on the phone.

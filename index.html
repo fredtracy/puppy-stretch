@@ -6,6 +6,10 @@
     <meta name="theme-color" content="#f7c4b4" />
     <title>Workout Timer</title>
     <link rel="icon" id="favicon" type="image/png" />
+    <!-- Home-screen install: Chrome takes the app icon from the manifest, not
+         the favicon, which is only drawn by script after load. -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
     <style>
       :root {
         --sky-top: #ffe3d2;
