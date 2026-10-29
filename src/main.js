@@ -1,6 +1,7 @@
-// Workout timer: Darla barks every 30 seconds, and she and Miranda keep time
-// beside you — Miranda squats and Darla sits when you press Start, both stand
-// back up on the next bark, and so on.
+// Workout timer: a 3-second countdown to get into position, then Darla barks
+// and you hold for 30 seconds, then the countdown again, and so on. She and
+// Miranda keep time beside you — Miranda squats and Darla sits on the first
+// bark, both stand back up on the next, and so on.
 //
 // A spin-off of puppy-run rather than a mode of the game. It has copies of
 // the two character modules and nothing else (no yard, no house, no trees),
@@ -20,6 +21,10 @@ const INTERVAL = (() => {
   return Number.isFinite(s) && s >= 5 && s <= 600 ? s : 30;
 })();
 
+// Seconds to get into the next position before each bark, on top of the hold.
+const PREP = 3;
+const CYCLE = PREP + INTERVAL;
+
 // Fairy by day, goth by night, same as the yard. Decided once at load — a
 // workout doesn't last long enough to cross the line in a way that matters.
 const hour = new Date().getHours();
@@ -34,7 +39,7 @@ drawDarlaPortrait(faviconCanvas.getContext('2d'), 64);
 $('favicon').href = faviconCanvas.toDataURL('image/png');
 
 $('count').textContent = INTERVAL;
-$('blurb').textContent = `Darla barks every ${INTERVAL} seconds`;
+$('blurb').textContent = `${PREP}-second countdown, then Darla barks every ${INTERVAL} seconds`;
 
 // ── scene ─────────────────────────────────────────────────────────────────
 
@@ -335,6 +340,23 @@ function cue() {
   else barkWaiting = true;
 }
 
+// A short, soft blip on each number of the countdown, so you can hear it
+// coming without looking at the phone. Synthesised, so it never waits on a
+// download.
+function tick() {
+  navigator.vibrate?.(40);
+  if (!audio) return;
+  const osc = audio.createOscillator();
+  const gain = audio.createGain();
+  osc.frequency.value = 880;
+  const t = audio.currentTime;
+  gain.gain.setValueAtTime(0.25, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  osc.connect(gain).connect(audio.destination);
+  osc.start(t);
+  osc.stop(t + 0.12);
+}
+
 // The browser drops the lock whenever the page is hidden, so it's asked for
 // again each time the page comes back.
 let wakeLock = null;
@@ -358,28 +380,44 @@ let started = false; // between Start and Stop, paused or not
 let running = false;
 let startedAt = 0;
 let pausedAt = 0;
-let round = 0;
+let barked = -1; // last round whose bark has gone off
+let ticked = -1; // last countdown number blipped, counted across rounds
 
 function elapsed() {
   return ((running ? performance.now() : pausedAt) - startedAt) / 1000;
 }
 
+// Each round is the countdown (the first PREP seconds) then the hold.
 function update() {
   if (!started) return;
   const e = elapsed();
-  const r = Math.floor(e / INTERVAL);
-  if (running && r > round) {
-    round = r;
-    cue();
-    // Down on even rounds, starting with the Start tap itself.
-    moveTo(round % 2 === 0 ? 1 : 0);
-    $('count').classList.add('pop');
-    setTimeout(() => $('count').classList.remove('pop'), 180);
+  const r = Math.floor(e / CYCLE);
+  const t = e - r * CYCLE;
+  const count = $('count');
+  if (t < PREP) {
+    const n = r * PREP + Math.floor(t);
+    if (running && n > ticked) {
+      ticked = n;
+      tick();
+    }
+    count.classList.add('prep');
+    count.textContent = Math.ceil(PREP - t);
+    $('status').textContent = running ? 'Get ready' : 'Paused · get ready';
+    return;
   }
-  $('count').textContent = Math.ceil(INTERVAL - (e % INTERVAL)) || INTERVAL;
-  $('status').textContent = running ? `Round ${round + 1}` : `Paused · round ${round + 1}`;
+  if (running && r > barked) {
+    barked = r;
+    cue();
+    // Down on even rounds, starting with the first bark.
+    moveTo(r % 2 === 0 ? 1 : 0);
+    count.classList.add('pop');
+    setTimeout(() => count.classList.remove('pop'), 180);
+  }
+  count.classList.remove('prep');
+  count.textContent = Math.ceil(CYCLE - t) || INTERVAL;
+  $('status').textContent = running ? `Round ${r + 1}` : `Paused · round ${r + 1}`;
 }
-setInterval(update, 200);
+setInterval(update, 100);
 
 $('start').addEventListener('click', () => {
   // Audio has to be created inside a tap or the browser keeps it muted.
@@ -388,9 +426,8 @@ $('start').addEventListener('click', () => {
     loadBark();
   }
   audio.resume();
-  cue();
-  moveTo(1);
-  round = 0;
+  barked = -1;
+  ticked = -1;
   startedAt = performance.now();
   started = true;
   running = true;
@@ -421,8 +458,8 @@ $('stop').addEventListener('click', () => {
   started = false;
   running = false;
   letSleep();
-  round = 0;
   moveTo(0);
+  $('count').classList.remove('prep');
   $('count').textContent = INTERVAL;
   $('status').textContent = 'Ready';
   $('controls').hidden = true;
