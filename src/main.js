@@ -1,4 +1,4 @@
-// Workout timer: a 3-second countdown to get into position, then Darla barks
+// Workout timer: a 5-second countdown to get into position, then Darla barks
 // and you hold for 30 seconds, then the countdown again, and so on. She and
 // Miranda keep time beside you — Miranda squats and Darla sits on the first
 // bark, both stand back up on the next, and so on.
@@ -22,7 +22,7 @@ const INTERVAL = (() => {
 })();
 
 // Seconds to get into the next position before each bark, on top of the hold.
-const PREP = 3;
+const PREP = 5;
 const CYCLE = PREP + INTERVAL;
 
 // Fairy by day, goth by night, same as the yard. Decided once at load — a

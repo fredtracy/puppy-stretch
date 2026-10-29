@@ -49,11 +49,11 @@ the list periodically and either bless or revert each item, then move it to a
   `scripts/make-icons.mjs` from the same shapes as `portrait-darla.js` — if
   the portrait changes, rerun it.
 
-- **The 3-second countdown adds to the hold** rather than eating into it:
-  each round is 3 s to get into position, then the bark, then a full 30 s
-  (so a round is 33 s). Asked for: the countdown on Start and before every
-  bark. Picked, not asked: a soft synthesised blip (880 Hz) and a 40 ms buzz
-  on each of 3-2-1, the countdown numbers in the button colour, "Get ready"
+- **The countdown adds to the hold** rather than eating into it: each round
+  is 5 s to get into position (asked for: 3 s at first, then 5), then the
+  bark, then a full 30 s (so a round is 35 s). Asked for: the countdown on
+  Start and before every bark. Picked, not asked: a soft synthesised blip
+  (880 Hz) and a 40 ms buzz on each number, the countdown numbers in the button colour, "Get ready"
   as the status line, and the poses now changing on the first bark instead of
   on the Start tap.
 
